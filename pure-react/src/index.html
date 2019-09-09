@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root">React not rendered</div>
+    <!-- This lets us to bring in really easily the react library -->
+    <script src="https://unpkg.com/react@16.8.6/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16.8.6/umd/react-dom.development.js"></script>
+    <script>
+      // Instead of using JSX, we're using vanilla js to create the components
+
+      const Person = props => {
+        return React.createElement('div', {}, [
+          React.createElement('h1', {}, props.name),
+          React.createElement('p', {}, props.occupation)
+        ]);
+      };
+
+      /* CLASS COMPONENT */
+      class App extends React.Component {
+        render() {
+          return React.createElement('div', {}, [
+            React.createElement('h1', {}, 'React is rendered'),
+            React.createElement(Person, { name: 'Omar', occupation: 'Developer' }),
+            React.createElement(Person, { name: 'Miguel', occupation: 'Teacher' }),
+            React.createElement(Person, { name: 'Regina', occupation: 'Student' })
+          ]);
+        }
+      }
+
+      /* FUNCTIONAL COMPONENT */
+      // The 2nd and 3rd parameters of the React.createElement function are optional
+      // The 2nd parameter defines the class, id or any property or attribute that we want to assign to the html element
+
+      // const App = () => {
+      //   return React.createElement('div', {}, [
+      //     React.createElement('h1', {}, 'React is rendered'),
+      //     React.createElement(Person, { name: 'Omar', occupation: 'Developer' }),
+      //     React.createElement(Person, { name: 'Miguel', occupation: 'Teacher' }),
+      //     React.createElement(Person, { name: 'Regina', occupation: 'Student' })
+      //   ]);
+      // };
+
+      ReactDOM.render(React.createElement(App), document.getElementById('root'));
+    </script>
+  </body>
+</html>
