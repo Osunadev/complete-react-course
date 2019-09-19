@@ -1,10 +1,14 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 
 import './menu-item.styles.scss';
 
-const MenuItem = ({ title, imageUrl, size }) => {
+// match and history are objects provided by the Router using the withRouter HOC
+const MenuItem = ({ title, imageUrl, size, linkUrl, match, history, location }) => {
+  console.log({ location, match, history });
   return (
-    <div className={`${size} menu-item`}>
+    // match.url is the complete url
+    <div className={`${size} menu-item`} onClick={() => history.push(`${match.url}${linkUrl}`)}>
       <div className='background-image' style={{ backgroundImage: `url(${imageUrl})` }} />
       <div className='content'>
         <div className='title'>{title.toUpperCase()}</div>
@@ -14,4 +18,4 @@ const MenuItem = ({ title, imageUrl, size }) => {
   );
 };
 
-export default MenuItem;
+export default withRouter(MenuItem);
