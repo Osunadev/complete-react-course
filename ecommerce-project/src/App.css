@@ -6,3 +6,8 @@ a {
   text-decoration: none;
   color: black;
 }
+
+/* We do this so that de padding, margin and border don't modify the element size (i.e. a input text) */
+* {
+  box-sizing: border-box;
+}

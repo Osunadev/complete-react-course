@@ -1,0 +1,6 @@
+{
+    "prettier.jsxSingleQuote": true,
+    "prettier.useTabs": true,
+    "editor.formatOnSave": true,
+    "typescript.autoClosingTags": false
+}
