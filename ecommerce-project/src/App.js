@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import './App.css';
@@ -57,12 +57,20 @@ class App extends React.Component {
 				<Switch>
 					<Route exact path='/' component={HomePage} />
 					<Route path='/shop' component={ShopPage} />
-					<Route path='/signin' component={SignInAndSignUp} />
+					<Route
+						exact
+						path='/signin'
+						render={() => (this.props.currentUser ? <Redirect to='/' /> : <SignInAndSignUp />)}
+					/>
 				</Switch>
 			</div>
 		);
 	}
 }
+
+const mapStateToProps = ({ user }) => ({
+	currentUser: user.currentUser
+});
 
 const mapDispatchToProps = dispatch => ({
 	/* 	dispatch() it's a way for redux to know that whatever object we are passing in, is going
@@ -76,6 +84,6 @@ const mapDispatchToProps = dispatch => ({
 		but we don't need to get any store state, so the first one is null */
 
 export default connect(
-	null,
+	mapStateToProps,
 	mapDispatchToProps
 )(App);
