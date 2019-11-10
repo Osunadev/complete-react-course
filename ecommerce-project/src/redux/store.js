@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware } from 'redux';
+import { persistStore } from 'redux-persist';
 import logger from 'redux-logger';
 
 import rootReducer from './root-reducer';
@@ -8,6 +9,8 @@ const middlewares = [logger];
 
 // We're using array spread operator to spread our array middleware values
 // as if they were passed directly as parameters to the applyMiddleware function
-const store = createStore(rootReducer, applyMiddleware(...middlewares));
+export const store = createStore(rootReducer, applyMiddleware(...middlewares));
 
-export default store;
+// this persistor calls our persistStore method passing in our store so this persists or
+// is essentially a persisted version of our store
+export const persistor = persistStore(store);
