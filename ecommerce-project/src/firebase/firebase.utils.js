@@ -18,11 +18,9 @@ export const createUserProfileDocument = async (userAuth, aditionalData) => {
 	if (!userAuth) return;
 
 	const userRef = firestore.doc(`users/${userAuth.uid}`);
-	/*  a promise is returned with a DocumentSnapshot object as a response value
-      when using userRef.get() */
+
 	const snapShot = await userRef.get();
 
-	/* If the user doesn't exist in the Firestore, we create it */
 	if (!snapShot.exists) {
 		const { displayName, email } = userAuth;
 		const createdAt = new Date();
@@ -42,17 +40,50 @@ export const createUserProfileDocument = async (userAuth, aditionalData) => {
 	return userRef;
 };
 
+// This function were made only for letting firebase to add our Shop Items to the Firestore
+// once. So that we wouldn't do it manually. But we can use it to store any document in the specified collection in Firestore
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+	const collectionRef = firestore.collection(collectionKey);
+
+	const batch = firestore.batch();
+
+	objectsToAdd.forEach(obj => {
+		// Firebase is creating a new CollectionReference and Generating a random Unique ID for us
+		const newDocRef = collectionRef.doc();
+		batch.set(newDocRef, obj);
+	})
+
+	// Then when we're done with our batch writing, we're going to fire off our batch
+	return await batch.commit();
+}
+
+// We'll get a collectionSnapshot and convert it to an object
+export const convertCollectionsSnapshotToMap = collections => {
+	const transformedCollection = collections.docs.map(doc => {
+		const { title, items } = doc.data();
+
+		return {
+			routeName: encodeURI(title.toLowerCase()),
+			id: doc.id,
+			title,
+			items
+		}
+
+	});
+
+	return transformedCollection.reduce((acc, collection) => {
+		acc[collection.title.toLowerCase()] = collection;
+		return acc;
+	}, {})
+}
+
 firebase.initializeApp(firebaseConfig);
 
-/* We'll export this auth variable for us to use it wherever we need of authentication */
 export const auth = firebase.auth();
-/* We'll export this firestore variable for us to use it wherever we need to use the firestore */
 export const firestore = firebase.firestore();
 
 const provider = new firebase.auth.GoogleAuthProvider();
-/* This means that we want to always trigger the Google pop up whenever we use this Google Auth provider for authentication*/
 provider.setCustomParameters({ prompt: 'select_account' });
-/* auth.signInWithPopup can work with Facebook, LinkedIn, etc. but we're only using Google */
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
 export default firebase;

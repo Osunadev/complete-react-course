@@ -21,18 +21,14 @@ class App extends React.Component {
 
 	componentDidMount() {
 		const { setCurrentUser } = this.props;
-
-		/* unsubscribeFromAuth --- auth.onAuthStateChanged returns a function that helps us to unsubscribe 
-		to the open subscription of the auth handling */
-
-		/* 	auth.onAuthStateChanged method helps us to know when the user has logged out or logged in.
-			This observer is only trigerred on sign-in or sing-out */
+		//	auth.onAuthStateChanged method helps us to know when the user has logged out or logged in.
+		//	This observer is only trigerred on sign-in or sing-out
 		this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-			/* userAuth is a Firebase User */
 			if (userAuth) {
 				const userRef = await createUserProfileDocument(userAuth);
 
-				/* Basically we're getting an Snapshot of the document information (the user info) stored in Firestore */
+				// We pass a callback to the onSnapshot method to be called every time a new DocumentSnapshot is available.
+				// This could be that we modify our document data, remove a document data, create a new document data, etc.
 				userRef.onSnapshot(snapShot => {
 					setCurrentUser({
 						id: snapShot.id,

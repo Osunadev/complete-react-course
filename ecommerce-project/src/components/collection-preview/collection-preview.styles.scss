@@ -7,6 +7,11 @@
   .title {
     font-size: 28px;
     margin-bottom: 25px;
+
+    &:hover {
+      cursor: pointer;
+      color: rgb(9, 87, 83);
+    }
   }
 
   .preview {

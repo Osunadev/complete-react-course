@@ -11,11 +11,13 @@ export const selectShopCollections = createSelector(
 // our Collections-Overview component gets down a nice shaped array
 export const selectCollectionsForPreview = createSelector(
 	[selectShopCollections],
-	collections => Object.keys(collections).map(collectionKey => collections[collectionKey])
+	collections => collections
+		? Object.keys(collections).map(collectionKey => collections[collectionKey])
+		: []
 );
 
 export const selectCollection = collectionUrlParam =>
 	createSelector(
 		[selectShopCollections],
-		collections => collections[collectionUrlParam]
+		collections => (collections ? collections[collectionUrlParam] : null)
 	);
