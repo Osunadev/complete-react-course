@@ -1,11 +1,12 @@
 import { createStore, applyMiddleware } from 'redux';
 import { persistStore } from 'redux-persist';
 import logger from 'redux-logger';
+import thunk from 'redux-thunk';
 
 import rootReducer from './root-reducer';
 
 // it's an array because we can have multiple middlewares
-const middlewares = [logger];
+const middlewares = [logger, thunk];
 
 // We're using array spread operator to spread our array middleware values
 // as if they were passed directly as parameters to the applyMiddleware function

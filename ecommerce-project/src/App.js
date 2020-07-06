@@ -23,19 +23,18 @@ class App extends React.Component {
 		const { setCurrentUser } = this.props;
 		//	auth.onAuthStateChanged method helps us to know when the user has logged out or logged in.
 		//	This observer is only trigerred on sign-in or sing-out
-		this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+		this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
 			if (userAuth) {
 				const userRef = await createUserProfileDocument(userAuth);
 
 				// We pass a callback to the onSnapshot method to be called every time a new DocumentSnapshot is available.
 				// This could be that we modify our document data, remove a document data, create a new document data, etc.
-				userRef.onSnapshot(snapShot => {
+				userRef.onSnapshot((snapShot) => {
 					setCurrentUser({
 						id: snapShot.id,
 						/* displayName, email, createdAt */
-						...snapShot.data()
+						...snapShot.data(),
 					});
-
 				});
 			} else {
 				setCurrentUser(userAuth);
@@ -69,18 +68,15 @@ class App extends React.Component {
 }
 
 const mapStateToProps = createStructuredSelector({
-	currentUser: selectCurrentUser
+	currentUser: selectCurrentUser,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
 	/* 	dispatch() it's a way for redux to know that whatever object we are passing in, is going
 			to be an action object that we're going to pass down to every reducer. */
 
 	// We're just dispatching the object returned by our setCurrentUser action
-	setCurrentUser: user => dispatch(setCurrentUser(user))
+	setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
-
-/* 	connect can get two arguments: mapStateToProps and mapDispatchToProps
-		but we don't need to get any store state, so the first one is null */
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
