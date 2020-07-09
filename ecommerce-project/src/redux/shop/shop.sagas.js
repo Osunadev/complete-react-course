@@ -8,8 +8,6 @@ import { fetchCollectionsSuccess, fetchCollectionsFailure } from './shop.actions
 import ShopActionTypes from './shop.types';
 
 export function* fetchCollectionsAsync() {
-	yield console.log('I am fired');
-
 	// Inside a generator, sagas doesn't use the 'dispatch' keywoard
 	// to dispatch actions, instead they use the 'put' effect.
 
@@ -19,7 +17,15 @@ export function* fetchCollectionsAsync() {
 	try {
 		const collectionRef = firestore.collection('collections');
 
-		// This is very similar to async await
+		/**
+		 * collectionRef.get() returns a pending Promise, that pending Promise
+		 * is yielded to the middleware and that middleware waits until it resolves or
+		 * rejects, after that happens, the middleware calls the next(resolvedValue) method on the
+		 * fetchCllectionsAsync generator so that it can receive the snapshot value and store it
+		 * into the snapshot variable.
+		 *
+		 * This is very similar to the await functionallity in async functions
+		 */
 		const snapshot = yield collectionRef.get();
 
 		// We want to yield this call in case this convertCollectionsSnapshotToMap function
