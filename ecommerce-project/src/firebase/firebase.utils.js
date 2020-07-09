@@ -76,6 +76,23 @@ export const convertCollectionsSnapshotToMap = (collections) => {
 	}, {});
 };
 
+// We're 'mimicking' the functionality that we may encounter
+// when we don't have Firebase as the backend in our app
+export const getCurrentUser = () => {
+	// We want to return a Promise oriented solution
+	// that our sagas can yield for
+	return new Promise((resolve, reject) => {
+		const unsuscribe = auth.onAuthStateChanged((userAuth) => {
+			// This is just a 'trick', because we're unsuscribing to
+			// the observable stream every time we get a userAuth change
+			// that could be logged in (a user obj) or logged out (null).
+			unsuscribe();
+
+			resolve(userAuth);
+		}, reject);
+	});
+};
+
 firebase.initializeApp(firebaseConfig);
 
 export const auth = firebase.auth();

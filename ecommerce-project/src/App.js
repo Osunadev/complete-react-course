@@ -10,37 +10,14 @@ import Header from './components/header/header.component';
 import SignInAndSignUp from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
 
 import { selectCurrentUser } from './redux/user/user.selectors';
+import { checkUserSession } from './redux/user/user.actions';
 
 import './App.css';
 
 class App extends React.Component {
-	/* We are explicitly declaring a method which initial value is null */
-	unsubscribeFromAuth = null;
-
 	componentDidMount() {
-		//	auth.onAuthStateChanged method helps us to know when the user has logged out or logged in.
-		//	This observer is only trigerred on sign-in or sing-out
-		// this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-		// 	if (userAuth) {
-		// 		const userRef = await createUserProfileDocument(userAuth);
-		// 		// We pass a callback to the onSnapshot method to be called every time a new DocumentSnapshot is available.
-		// 		// This could be that we modify our document data, remove a document data, create a new document data, etc.
-		// 		userRef.onSnapshot((snapShot) => {
-		// 			setCurrentUser({
-		// 				id: snapShot.id,
-		// 				/* displayName, email, createdAt */
-		// 				...snapShot.data(),
-		// 			});
-		// 		});
-		// 	} else {
-		// 		setCurrentUser(userAuth);
-		// 	}
-		// });
-	}
-
-	componentWillUnmount() {
-		/* This will close the subscription to the auth handling firebase gives us */
-		this.unsubscribeFromAuth();
+		const { checkUserSession } = this.props;
+		checkUserSession();
 	}
 
 	render() {
@@ -67,4 +44,8 @@ const mapStateToProps = createStructuredSelector({
 	currentUser: selectCurrentUser,
 });
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = (dispatch) => ({
+	checkUserSession: () => dispatch(checkUserSession()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,5 +1,5 @@
 // It listens for every action of a specific type that we pass to it
-import { takeLatest, call, put } from 'redux-saga/effects';
+import { takeLatest, call, put, all } from 'redux-saga/effects';
 
 import { firestore, convertCollectionsSnapshotToMap } from '../../firebase/firebase.utils';
 
@@ -40,7 +40,7 @@ export function* fetchCollectionsAsync() {
 	}
 }
 
-export function* fetchCollectionsStart() {
+export function* onFetchCollectionsStart() {
 	// FETCH_COLLECTIONS_START is the pattern that our saga is waiting to be matched
 	// with the action we dispatch to the store
 
@@ -51,4 +51,8 @@ export function* fetchCollectionsStart() {
 	// FETCH_COLLECTIONS_START, the last 'call' would have the most updated data from our database
 	// So it's safe to say takeLatest is the best option
 	yield takeLatest(ShopActionTypes.FETCH_COLLECTIONS_START, fetchCollectionsAsync);
+}
+
+export function* shopSagas() {
+	yield all([call(onFetchCollectionsStart)]);
 }
