@@ -6,6 +6,7 @@ import {
 	signOutSuccess,
 	signOutFailure,
 	signUpFailure,
+	signUpSuccess,
 } from './user.actions';
 
 import {
@@ -82,17 +83,21 @@ function* signOutUser() {
 	}
 }
 
-function* signUpUser({ payload }) {
-	const { email, password, displayName } = payload;
-
+function* signUpUser({ payload: { email, password, displayName } }) {
 	try {
 		const { user } = yield auth.createUserWithEmailAndPassword(email, password);
 		// After we're creating our user in our Authentication section, we're creating a document in our
 		// Firestore to store the information of the user created: uid, displayName, createdAt, email
-		yield getSnapshotFromUserAuth(user, { displayName });
+		yield put(signUpSuccess({ user, additionalData: { displayName } }));
 	} catch (error) {
 		yield put(signUpFailure(error.message));
 	}
+}
+
+// We could've implemented this functionallity inside our signUpUser worker, but it's a best practice
+// to do it this way because every worker just handles 1 single task (in this case is sign in)
+function* signInAfterSignUp({ payload: { user, additionalData } }) {
+	yield getSnapshotFromUserAuth(user, additionalData);
 }
 
 /** WATCHER SAGAS */
@@ -126,6 +131,9 @@ function* onSignUpStart() {
 	yield takeLatest(UserActionTypes.SIGN_UP_START, signUpUser);
 }
 
+function* onSignUpSuccess() {
+	yield takeLatest(UserActionTypes.SIGN_UP_SUCCESS, signInAfterSignUp);
+}
 // This will group all of our user sagas into one array, so that we can
 // merge it into a root saga and pass it down to the run method of the middleware
 export function* userSagas() {
@@ -135,5 +143,6 @@ export function* userSagas() {
 		call(onCheckUserSession),
 		call(onSignOutStart),
 		call(onSignUpStart),
+		call(onSignUpSuccess),
 	]);
 }
