@@ -1,6 +1,12 @@
 import { takeLatest, put, all, call } from 'redux-saga/effects';
 import UserActionTypes from './user.types';
-import { signInSuccess, signInFailure, signOutSuccess, signOutFailure } from './user.actions';
+import {
+	signInSuccess,
+	signInFailure,
+	signOutSuccess,
+	signOutFailure,
+	signUpFailure,
+} from './user.actions';
 
 import {
 	auth,
@@ -10,9 +16,9 @@ import {
 } from '../../firebase/firebase.utils';
 
 // Utils saga generator function
-function* getSnapshotFromUserAuth(userAuth) {
+function* getSnapshotFromUserAuth(userAuth, additionalData) {
 	try {
-		const userRef = yield call(createUserProfileDocument, userAuth);
+		const userRef = yield call(createUserProfileDocument, userAuth, additionalData);
 
 		// Getting the data snapshot of our userRef from Firebase Firestore
 		const userSnapshot = yield userRef.get();
@@ -27,6 +33,7 @@ function* getSnapshotFromUserAuth(userAuth) {
 		yield put(signInFailure(error));
 	}
 }
+
 /** WORKER SAGAS */
 function* signInWithGoogle() {
 	try {
@@ -75,6 +82,19 @@ function* signOutUser() {
 	}
 }
 
+function* signUpUser({ payload }) {
+	const { email, password, displayName } = payload;
+
+	try {
+		const { user } = yield auth.createUserWithEmailAndPassword(email, password);
+		// After we're creating our user in our Authentication section, we're creating a document in our
+		// Firestore to store the information of the user created: uid, displayName, createdAt, email
+		yield getSnapshotFromUserAuth(user, { displayName });
+	} catch (error) {
+		yield put(signUpFailure(error.message));
+	}
+}
+
 /** WATCHER SAGAS */
 /**
  * This is our watcher saga that listens when a GOOGLE_SIGN_IN_START
@@ -102,6 +122,10 @@ function* onSignOutStart() {
 	yield takeLatest(UserActionTypes.SIGN_OUT_START, signOutUser);
 }
 
+function* onSignUpStart() {
+	yield takeLatest(UserActionTypes.SIGN_UP_START, signUpUser);
+}
+
 // This will group all of our user sagas into one array, so that we can
 // merge it into a root saga and pass it down to the run method of the middleware
 export function* userSagas() {
@@ -110,5 +134,6 @@ export function* userSagas() {
 		call(onEmailSignInStart),
 		call(onCheckUserSession),
 		call(onSignOutStart),
+		call(onSignUpStart),
 	]);
 }

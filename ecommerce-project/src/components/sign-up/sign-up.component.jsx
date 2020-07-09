@@ -1,55 +1,37 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 
 import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.component';
 
-import { auth, createUserProfileDocument } from '../../firebase/firebase.utils';
+import { signUpStart, signUpFailure } from '../../redux/user/user.actions';
+import { selectSignUpError } from '../../redux/user/user.selectors';
 
 import './sign-up.styles.scss';
 
 class SignUp extends React.Component {
-	constructor() {
-		super();
+	state = {
+		displayName: '',
+		email: '',
+		password: '',
+		confirmPassword: '',
+	};
 
-		this.state = {
-			displayName: '',
-			email: '',
-			password: '',
-			confirmPassword: ''
-		};
-	}
-
-	handleSubmit = async event => {
+	handleSubmit = async (event) => {
 		event.preventDefault();
 
+		const { signUpStart, signUpFailure } = this.props;
 		const { displayName, email, password, confirmPassword } = this.state;
 
 		if (password !== confirmPassword) {
-			alert("Passwords don't match");
-			return;
-		}
-
-		try {
-			// auth.createUserWithEmailAndPassword returns a Firebase user
-			const { user } = await auth.createUserWithEmailAndPassword(email, password);
-
-			/* 	After we're creating our user in our Authentication section, we're creating a document in our 
-					Firestore to store the information of the user created: uid, displayName, createdAt, email */
-			createUserProfileDocument(user, { displayName });
-
-			/* Clearing out the FormInputs */
-			this.setState({
-				displayName: '',
-				email: '',
-				password: '',
-				confirmPassword: ''
-			});
-		} catch (error) {
-			console.log(error);
+			signUpFailure("Passwords don't match");
+		} else {
+			signUpStart(email, password, displayName);
 		}
 	};
 
-	handleChange = event => {
+	handleChange = (event) => {
 		const { name, value } = event.target;
 
 		this.setState({ [name]: value });
@@ -57,11 +39,13 @@ class SignUp extends React.Component {
 
 	render() {
 		const { displayName, email, password, confirmPassword } = this.state;
+		const { signUpError } = this.props;
 
 		return (
 			<div className="sign-up">
 				<h2 className="title">I do not have an account</h2>
 				<span>sign up with your email and password</span>
+				{signUpError && <span className="error-message">Error: {signUpError}</span>}
 				<form className="sign-up-form" onSubmit={this.handleSubmit}>
 					<FormInput
 						type="text"
@@ -102,4 +86,14 @@ class SignUp extends React.Component {
 	}
 }
 
-export default SignUp;
+const mapDispatchToProps = (dispatch) => ({
+	signUpStart: (email, password, displayName) =>
+		dispatch(signUpStart({ email, password, displayName })),
+	signUpFailure: (errorMsg) => dispatch(signUpFailure(errorMsg)),
+});
+
+const mapStateToProps = createStructuredSelector({
+	signUpError: selectSignUpError,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
