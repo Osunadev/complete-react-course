@@ -1,0 +1,21 @@
+{
+  "name": "ecommerce-api",
+  "version": "1.0.0",
+  "description": "The backend API to handle the Stripe token",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon main",
+    "start": "node main"
+  },
+  "author": "Omar Osuna",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "stripe": "^8.71.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

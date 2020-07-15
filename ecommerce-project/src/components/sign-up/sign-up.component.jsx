@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
+import { useSelector, useDispatch } from 'react-redux';
 
 import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.component';
@@ -10,7 +9,10 @@ import { selectSignUpError } from '../../redux/user/user.selectors';
 
 import './sign-up.styles.scss';
 
-const SignUp = ({ signUpStart, signUpFailure, signUpError }) => {
+const SignUp = () => {
+	const signUpError = useSelector(selectSignUpError);
+	const dispatch = useDispatch();
+
 	const [formValues, setFormValues] = useState({
 		displayName: '',
 		email: '',
@@ -24,9 +26,9 @@ const SignUp = ({ signUpStart, signUpFailure, signUpError }) => {
 		event.preventDefault();
 
 		if (password !== confirmPassword) {
-			signUpFailure("Passwords don't match");
+			dispatch(signUpFailure("Passwords don't match"));
 		} else {
-			signUpStart(email, password, displayName);
+			dispatch(signUpStart({ email, password, displayName }));
 		}
 	};
 
@@ -80,14 +82,4 @@ const SignUp = ({ signUpStart, signUpFailure, signUpError }) => {
 	);
 };
 
-const mapDispatchToProps = (dispatch) => ({
-	signUpStart: (email, password, displayName) =>
-		dispatch(signUpStart({ email, password, displayName })),
-	signUpFailure: (errorMsg) => dispatch(signUpFailure(errorMsg)),
-});
-
-const mapStateToProps = createStructuredSelector({
-	signUpError: selectSignUpError,
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+export default SignUp;
