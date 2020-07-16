@@ -1,6 +1,10 @@
 {
   "name": "ecommerce-api",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.16.2",
+    "npm": "6.14.4"
+  },
   "description": "The backend API to handle the Stripe token",
   "main": "index.js",
   "scripts": {
@@ -11,6 +15,7 @@
   "author": "Omar Osuna",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "stripe": "^8.71.0"

@@ -1,0 +1,5 @@
+node_modules
+.env
+# This client contains a build folder that
+# has the static files of our react app
+client
