@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 import { auth } from '../../firebase/firebase.utils';
 import CartIcon from '../cart-icon/cart-icon.component';
@@ -12,7 +12,7 @@ import { ReactComponent as Logo } from '../../assets/crown.svg';
 
 import './header.styles.scss';
 
-const Header = () => {
+const Header = ({ history }) => {
   const currentUser = useContext(UserContext);
   const { hidden } = useContext(CartContext);
 
@@ -29,7 +29,13 @@ const Header = () => {
           CONTACT
         </Link>
         {currentUser ? (
-          <div className='option' onClick={() => auth.signOut()}>
+          <div
+            className='option'
+            onClick={() => {
+              auth.signOut();
+              history.push('/');
+            }}
+          >
             SIGN OUT
           </div>
         ) : (
@@ -44,4 +50,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default withRouter(Header);
