@@ -5,17 +5,22 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { store, persistor } from './redux/store';
+import { CartProvider } from './providers/cart/cart.provider';
 
 import './index.css';
 import App from './App';
 
+// The CartProvider wraps our entire application so that
+// the children can consume the CartContext state
 ReactDOM.render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <PersistGate persistor={persistor}>
-        <App />
-      </PersistGate>
-    </BrowserRouter>
-  </Provider>,
+  <CartProvider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <PersistGate persistor={persistor}>
+          <App />
+        </PersistGate>
+      </BrowserRouter>
+    </Provider>
+  </CartProvider>,
   document.getElementById('root')
 );
