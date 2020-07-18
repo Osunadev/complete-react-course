@@ -36,9 +36,7 @@ class App extends React.Component {
         });
       }
 
-      this.setState({
-        currentUser: userAuth,
-      });
+      this.setState({ currentUser: userAuth });
     });
   }
 
@@ -47,13 +45,9 @@ class App extends React.Component {
   }
 
   render() {
-    const { currentUser } = this.state;
-
     return (
       <div>
-        {/* In this application, the header is the only component that cares about */}
-        {/* the CurrentUser state because on log out and log in, it can be changed */}
-        <CurrentUserContext.Provider value={currentUser}>
+        <CurrentUserContext.Provider value={this.state.currentUser}>
           <Header />
         </CurrentUserContext.Provider>
         <Switch>
@@ -64,7 +58,7 @@ class App extends React.Component {
             exact
             path='/signin'
             render={() =>
-              this.props.currentUser ? (
+              this.state.currentUser ? (
                 <Redirect to='/' />
               ) : (
                 <SignInAndSignUpPage />

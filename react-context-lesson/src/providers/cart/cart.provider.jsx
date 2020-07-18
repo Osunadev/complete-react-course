@@ -4,6 +4,8 @@ import {
   addItemToCart,
   removeItemFromCart,
   clearItemFromCart,
+  getCartItemsCount,
+  getCartItemsTotal,
 } from './cart.utils';
 
 // We are specifying the initial values of our context's state
@@ -20,6 +22,7 @@ export const CartContext = createContext({
   removeItem: () => {},
   clearItem: () => {},
   cartItemsCount: 0,
+  checkoutTotal: 0,
 });
 
 /**
@@ -33,6 +36,7 @@ export const CartProvider = ({ children }) => {
   const [hidden, setHidden] = useState(true);
   const [cartItems, setCartItems] = useState([]);
   const [cartItemsCount, setCartItemsCount] = useState(0);
+  const [checkoutTotal, setCheckoutTotal] = useState(0);
 
   // Remember that we need to update our addItem and removeItem function so that
   // it behaves as supose to, when calling it.
@@ -41,6 +45,13 @@ export const CartProvider = ({ children }) => {
 
   const clearItem = item => setCartItems(clearItemFromCart(cartItems, item));
   const toggleCartHidden = () => setHidden(!hidden);
+
+  // Everytime our cartItems array changes, we're going to update
+  // our cartItemsCount value
+  useEffect(() => {
+    setCartItemsCount(getCartItemsCount(cartItems));
+    setCheckoutTotal(getCartItemsTotal(cartItems));
+  }, [cartItems]);
 
   return (
     <CartContext.Provider
@@ -52,6 +63,7 @@ export const CartProvider = ({ children }) => {
         removeItem,
         clearItem,
         cartItemsCount,
+        checkoutTotal,
       }}
     >
       {children}
